@@ -9,7 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^14.17.3",
+    "discord.js": "^14.18.0",
     "express": "^4.21.2",
     "mongodb": "^4.17.0",
     "quickchart-js": "^3.1.3",
