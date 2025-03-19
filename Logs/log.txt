@@ -1,0 +1,180 @@
+2025-03-18 13:06:46.714 EST (LOG) | Loading commands...
+
+2025-03-18 13:06:46.714 EST (LOG) | **Loaded 2 commands.**
+
+2025-03-18 13:06:46.749 EST (LOG) | > Loading Discord events....
+
+2025-03-18 13:06:46.749 EST (LOG) | >> **Loaded 4 Discord** events. Success **(4) Failed (0)**
+[
+    [
+        [
+            "✓",
+            "error.js"
+        ],
+        [
+            "✓",
+            "messageCreate.js"
+        ]
+    ],
+    [
+        [
+            "✓",
+            "ready.js"
+        ],
+        [
+            "✓",
+            "warn.js"
+        ]
+    ]
+]
+
+2025-03-18 13:06:46.752 EST (LOG) | > Loading GCA Events....
+
+2025-03-18 13:06:46.752 EST (LOG) | >> **Loaded 0 GCA** events. **Success (0) Failed (0)**
+
+2025-03-18 13:06:47.480 EST (LOG) | Logged in as G-C-A Beta#5728! `(1335790522261835828)`
+
+2025-03-18 14:05:28.213 EST (LOG) | Loading commands...
+
+2025-03-18 14:05:28.213 EST (LOG) | **Loaded 2 commands.**
+
+2025-03-18 14:05:28.233 EST (LOG) | > Loading Discord events....
+
+2025-03-18 14:05:28.233 EST (LOG) | >> **Loaded 4 Discord** events. Success **(4) Failed (0)**
+[
+    [
+        [
+            "✓",
+            "error.js"
+        ],
+        [
+            "✓",
+            "messageCreate.js"
+        ]
+    ],
+    [
+        [
+            "✓",
+            "ready.js"
+        ],
+        [
+            "✓",
+            "warn.js"
+        ]
+    ]
+]
+
+2025-03-18 14:05:28.235 EST (LOG) | > Loading GCA Events....
+
+2025-03-18 14:05:28.235 EST (LOG) | >> **Loaded 0 GCA** events. **Success (0) Failed (0)**
+
+2025-03-18 14:05:29.041 EST (LOG) | Logged in as G-C-A Beta#5728! `(1335790522261835828)`
+
+2025-03-18 14:06:22.690 EST (LOG) | Loading commands...
+
+2025-03-18 14:06:22.690 EST (LOG) | **Loaded 2 commands.**
+
+2025-03-18 14:06:22.710 EST (LOG) | > Loading Discord events....
+
+2025-03-18 14:06:22.710 EST (LOG) | >> **Loaded 4 Discord** events. Success **(4) Failed (0)**
+[
+    [
+        [
+            "✓",
+            "error.js"
+        ],
+        [
+            "✓",
+            "messageCreate.js"
+        ]
+    ],
+    [
+        [
+            "✓",
+            "ready.js"
+        ],
+        [
+            "✓",
+            "warn.js"
+        ]
+    ]
+]
+
+2025-03-18 14:06:22.712 EST (LOG) | > Loading GCA Events....
+
+2025-03-18 14:06:22.712 EST (LOG) | >> **Loaded 0 GCA** events. **Success (0) Failed (0)**
+
+2025-03-18 14:06:23.251 EST (LOG) | Logged in as G-C-A Beta#5728! `(1335790522261835828)`
+
+2025-03-18 16:16:42.886 EST (LOG) | Loading commands...
+
+2025-03-18 16:16:42.886 EST (LOG) | **Loaded 2 commands.**
+
+2025-03-18 16:16:42.913 EST (LOG) | > Loading Discord events....
+
+2025-03-18 16:16:42.913 EST (LOG) | >> **Loaded 4 Discord** events. Success **(4) Failed (0)**
+[
+    [
+        [
+            "✓",
+            "error.js"
+        ],
+        [
+            "✓",
+            "messageCreate.js"
+        ]
+    ],
+    [
+        [
+            "✓",
+            "ready.js"
+        ],
+        [
+            "✓",
+            "warn.js"
+        ]
+    ]
+]
+
+2025-03-18 16:16:42.915 EST (LOG) | > Loading GCA Events....
+
+2025-03-18 16:16:42.915 EST (LOG) | >> **Loaded 0 GCA** events. **Success (0) Failed (0)**
+
+2025-03-18 16:16:43.505 EST (LOG) | Logged in as G-C-A Beta#5728! `(1335790522261835828)`
+
+2025-03-18 17:58:34.663 EST (LOG) | Loading commands...
+
+2025-03-18 17:58:34.663 EST (LOG) | **Loaded 2 commands.**
+
+2025-03-18 17:58:34.681 EST (LOG) | > Loading Discord events....
+
+2025-03-18 17:58:34.681 EST (LOG) | >> **Loaded 4 Discord** events. Success **(4) Failed (0)**
+[
+    [
+        [
+            "✓",
+            "error.js"
+        ],
+        [
+            "✓",
+            "messageCreate.js"
+        ]
+    ],
+    [
+        [
+            "✓",
+            "ready.js"
+        ],
+        [
+            "✓",
+            "warn.js"
+        ]
+    ]
+]
+
+2025-03-18 17:58:34.684 EST (LOG) | > Loading GCA Events....
+
+2025-03-18 17:58:34.684 EST (LOG) | >> **Loaded 0 GCA** events. **Success (0) Failed (0)**
+
+2025-03-18 17:58:35.191 EST (LOG) | Logged in as G-C-A Beta#5728! `(1335790522261835828)`
+
