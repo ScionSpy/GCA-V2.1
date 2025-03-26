@@ -2,29 +2,40 @@
  * @typedef {"players"|"players"} TableCategory
 */
 
+const AcceptedMethods = [ 'GET', 'POST', 'EDIT', 'DELETE' ];
+const TableCategory = [ "Players", "RewardCodes" ]
+
 
 const Database = require('./core.js');
 const DB = new Database();
 
 
-const Validator = function (table, data, options, newData) {
+const Validator = function (Method, table, data, options, newData) {
+    if (typeof Method !== "string") {
+        throw new Error(`'Method' must be a string! got ${typeof Method}`);
+    };
+    if (!AcceptedMethods.includes(Method)) {
+        throw new Error(`'${Method}' is not a valid Method! Use one of : ${AcceptedMethods}`);
+    };
+
+
     if (typeof table !== "string") {
         throw new Error(`'table' must be a string! got ${typeof table}`);
-    }
-    if (!Object.prototype.hasOwnProperty.call(TableCategory, table)) {
+    };
+    if (!TableCategory.includes(table)) {
         throw new Error(`'${table}' is not a valid Database Category!`);
     };
 
 
 
-    if (typeof data !== "object") {
+    if (Method !== "GET" && typeof data !== "object") {
         throw new Error(`'data' must be an object! got ${typeof data}`);
     };
 
 
 
-    if (typeof newData !== "undefined" && typeof newData !== "object") {
-        throw new Error(`'data' must be an object! got ${typeof newData}`);
+    if (Method === "EDIT" && typeof newData !== "object") {
+        throw new Error(`'newData' must be an object! got ${typeof newData}`);
     };
 
 
@@ -48,8 +59,8 @@ class db {
      * @param {object} data
      * @param {object} [options]
      */
-    _Get = async function _Get(table, data, options){
-        Validator(table, options);
+    _Get = async function _Get(table, data, options = {}){
+        Validator("GET", table, data, options);
         return await DB._Get(table, data, options.proj, options.opt);
     };
 
@@ -59,8 +70,8 @@ class db {
      * @param {object} data
      */
     _Post = async function _Post(table, data) {
-        Validator(table, options);
-        return await DB._Post(table,data);
+        Validator("POST", table, data);
+        return await DB._Post(table, data);
     };
 
 
@@ -70,7 +81,7 @@ class db {
      * @param {object} newData
      */
     _Edit = async function _Edit(table, data, newData) {
-        Validator(table, options);
+        Validator("EDIT", table, data, newData);
         return await DB._Edit(table, data, undefined, newData);
     };
 
@@ -80,7 +91,7 @@ class db {
      * @param {object} data
      */
     _Delete = async function _Delete(table, data) {
-        Validator(table, data);
+        Validator("DELETE", table, data);
         return await DB._Delete(table, data);
     };
 };

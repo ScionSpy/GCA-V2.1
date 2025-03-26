@@ -22,7 +22,7 @@ module.exports = class Database {
      */
     #ConnectionFailed = false;
 
-    #collectionPrefix = "beta_";
+    #collectionPrefix = "beta_V2.1_";
 
     constructor(DB = null, prefix){
         if(DB){
