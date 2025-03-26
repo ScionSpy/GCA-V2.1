@@ -1,6 +1,6 @@
 const Logger = require('../../Structures/Logger/logger');
 const WebAPI = require('../index');
-const config = require('./apiConfig');
+const config = require('.././apiConfig.js');
 const app_id = `application_id=${process.env.API_WARGAMING_APPID}`;
 
 const APIs = {
@@ -56,9 +56,8 @@ const API_Errors = {
 
 module.exports = class Wargaming_API extends WebAPI {
     constructor() {
-        this.logger = new Logger('Wargaming_API');
-
         super();
+        this.logger = new Logger('Wargaming_API');
     };
 
     async handelApiError(err, path) {
@@ -93,7 +92,7 @@ module.exports = class Wargaming_API extends WebAPI {
         if (query && !query.startsWith('&')) query = '&' + query;
         path = this.#verifyPath(path);
 
-        let request = app_id ? `${path}?${config.app_id}${query}` : `${path}?${query}`;
+        let request = app_id ? `${path}?${app_id}${query}` : `${path}?${query}`;
         /*let request;
         if (path.startsWith("wows")) request = app_id ? `${path}?${config.app_id}${query}` : `${path}?${query}`;
         else request = `${path}?${query}`;*/
@@ -106,7 +105,7 @@ module.exports = class Wargaming_API extends WebAPI {
             console.log(`(${Date.now()}) API Error: makeApiCall(auth = ${auth}, request = ${request})`, err);
         };
 
-        if (config.Debug) console.log(`WargamingAPI.makeAPICall() ->\n`, results);
+        if (config.DEBUG) console.log(`WargamingAPI.makeAPICall() ->\n`, results);
 
         return results;
     };

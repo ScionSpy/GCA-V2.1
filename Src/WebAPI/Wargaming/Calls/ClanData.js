@@ -1,4 +1,4 @@
-const { defineQuery } = require('../../Utils');
+const { defineQuery } = require('../Utils.js');
 const WargamingAPI = require('../API');
 const API = new WargamingAPI();
 
@@ -123,4 +123,3 @@ ClanData.sendApplicationResponse = async function sendApplicationResponse(authTo
 
 
 //#endregion
-

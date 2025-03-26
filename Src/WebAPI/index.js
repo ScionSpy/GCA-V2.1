@@ -44,6 +44,7 @@ function containsLink(text) {
     );
 };
 
+const httpMethods = [ 'GET', 'POST', 'PATCH' ];
 
 module.exports = class WebApp {
     constructor(URI) {
