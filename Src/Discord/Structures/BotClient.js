@@ -38,10 +38,20 @@ module.exports = class BotClient extends Client {
         this.wait = require("util").promisify(setTimeout); // await client.wait(1000) - Wait 1 second.
 
         /**
-         * @type {import('@structures/Command')[]}
+         * @type {Array<import('./Command.js').CommandData>}
          */
         this.commands = []; // store actual command.
         this.commandIndex = new Collection(); // store (alias, arrayIndex) pair.
+
+        /**
+         * @type {Collection<string, import('./Command.js').CommandData>}
+         */
+        this.slashCommands = new Collection(); // store slash commands
+
+        /**
+         * @type {Array<import('../../Database/Schema/GuildSettings.js').GuildSettings>}
+         */
+        this.GuildSettings = new Collection();
 
         // Logger
         // this.logger = Logger;
@@ -55,7 +65,13 @@ module.exports = class BotClient extends Client {
 
     };
 
-    async loadAndLogin(){
+    /**
+     *
+     * @param {Number} startUpAt
+     * @returns
+     */
+    async loadAndLogin(startUpAt){
+        this.startUpAt = startUpAt;
 
         await this.loadCommands('./Src/Discord/Commands');
         await this.loadEvents('./Src/Discord/Events');
@@ -156,31 +172,37 @@ module.exports = class BotClient extends Client {
      * @param {import("@structures/Command")} cmd
      */
     loadCommand(cmd) {
-        // Prefix Command
-        if (cmd.prefCommand?.enabled) {
-            const index = this.commands.length;
-            if (this.commandIndex.has(cmd.name)) {
-                throw new Error(`Command ${cmd.name} already registered`);
-            }
-            if (Array.isArray(cmd.prefCommand.aliases)) {
-                cmd.prefCommand.aliases.forEach((alias) => {
-                    if (this.commandIndex.has(alias)) throw new Error(`Alias ${alias} already registered`);
-                    this.commandIndex.set(alias.toLowerCase(), index);
-                });
-            }
-            this.commandIndex.set(cmd.name.toLowerCase(), index);
-            this.commands.push(cmd);
-        } else {
-            this.logger.debug(`Skipping command ${cmd.name}. Disabled!`);
-        }
+        if (cmd.enabled) {
 
-        // Slash Command
-        /*if (cmd.slashCommand?.enabled) {
-            if (this.slashCommands.has(cmd.name)) throw new Error(`Slash Command ${cmd.name} already registered`);
-            this.slashCommands.set(cmd.name, cmd);
+            // Prefix Command
+            if (cmd.prefCommand?.enabled) {
+                const index = this.commands.length;
+                if (this.commandIndex.has(cmd.name)) {
+                    throw new Error(`Command ${cmd.name} already registered`);
+                }
+                if (Array.isArray(cmd.prefCommand.aliases)) {
+                    cmd.prefCommand.aliases.forEach((alias) => {
+                        if (this.commandIndex.has(alias)) throw new Error(`Alias ${alias} already registered`);
+                        this.commandIndex.set(alias.toLowerCase(), index);
+                    });
+                }
+                this.commandIndex.set(cmd.name.toLowerCase(), index);
+                this.commands.push(cmd);
+            } else {
+                this.logger.debug(`Skipping PrefixCommand '${cmd.name}'. Prefix Command Disabled!`);
+            }
+
+            // Slash Command
+            if (cmd.slashCommand?.enabled) {
+                if (this.slashCommands.has(cmd.name)) throw new Error(`Slash Command ${cmd.name} already registered`);
+                this.slashCommands.set(cmd.name, cmd);
+            } else {
+                this.logger.debug(`Skipping Slash Command '${cmd.name}'. Slash Command Disabled!`);
+            };
+
         } else {
-            this.logger.debug(`Skipping slash command ${cmd.name}. Disabled!`);
-        };*/
+            this.logger.debug(`Skipping Command '${cmd.name}'. Command Disabled!`);
+        };
     };
 
     /**
@@ -202,13 +224,68 @@ module.exports = class BotClient extends Client {
         }
 
 
-        /*if (this.slashCommands.size > 100) {
+        if (this.slashCommands.size > 100) {
             this.logger.webError(`Attempted to load ${this.slashCommands.size} of 100 slash commands!`)
             throw new Error("A maximum of 100 slash commands can be enabled");
-        };*/
+        };
         this.logger.webConsole(`**Loaded ${this.commands.length} commands.**`, null, { queueEmbed: true });
         //this.logger.webConsole(`Loaded ${this.slashCommands.size} slash commands`);
     };
+
+
+
+    /**
+     * Register slash command on startup
+     * @param {string} [guildId]
+     */
+    async registerInteractions(guildId) {
+        const toRegister = [];
+
+        // filter slash commands
+        //if (this.config.INTERACTIONS.SLASH) {
+            this.slashCommands
+                .map((cmd) => ({
+                    name: cmd.name,
+                    description: cmd.description,
+                    type: ApplicationCommandType.ChatInput,
+                    options: cmd.slashCommand.options,
+                }))
+                .forEach((s) => toRegister.push(s));
+        //}
+        console.log(toRegister)
+
+        // filter contexts
+        /*if (this.config.INTERACTIONS.CONTEXT) {
+            this.contextMenus
+                .map((ctx) => ({
+                    name: ctx.name,
+                    type: ctx.type,
+                }))
+                .forEach((c) => toRegister.push(c));
+        }*/
+
+        // Register Globally
+        if (!guildId) {
+            await this.application.commands.set(toRegister);
+        }
+
+        // Register for a specific guild
+        else if (guildId && typeof guildId === "string") {
+            const guild = this.guilds.cache.get(guildId);
+            if (!guild) {
+                this.logger.error(`Failed to register interactions in guild ${guildId}`, new Error("No matching guild"));
+                return;
+            }
+            await guild.commands.set(toRegister);
+        }
+
+        // Throw an error
+        else {
+            throw new Error("Did you provide a valid guildId to register interactions");
+        }
+
+        this.logger.debug(`Successfully registered ${toRegister.length} interactions!`);
+    }
 
     //#endregion
 

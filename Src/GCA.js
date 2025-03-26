@@ -1,3 +1,4 @@
+let startUpAt = Date.now();
 require('dotenv').config();
 
 // register extenders
@@ -11,9 +12,8 @@ const BotClient = require('./Discord/Structures/BotClient');
 
 // initialize client
 const client = new BotClient();
-client.loadAndLogin();
+client.loadAndLogin(startUpAt);
 
 
 // find unhandled promise rejections
 process.on("unhandledRejection", (err) => client.logger.webError(`Unhandled exception`, err.stack));
-

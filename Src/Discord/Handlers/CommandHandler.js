@@ -116,7 +116,7 @@ module.exports = {
     /**
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
      */
-    /*handleSlashCommand: async function (interaction) {
+    handleSlashCommand: async function (interaction) {
         const cmd = interaction.client.slashCommands.get(interaction.commandName);
         if (!cmd) return interaction.reply({ content: "An error has occurred", ephemeral: true }).catch(() => { });
 
@@ -173,7 +173,7 @@ module.exports = {
 
         try {
             await interaction.deferReply({ ephemeral: cmd.slashCommand.ephemeral });
-            const settings = { prefix: PREFIX ? PREFIX : "!" }; //await getSettings(interaction.guild);
+            const settings = { prefix: PREFIX ? PREFIX : '!'}; //await getSettings(interaction.guild);
             await cmd.slashExe(interaction, { settings });
         } catch (ex) {
             await interaction.followUp(`Oops! An error occurred while running the command!\n\`\`\`xl\n${ex.stack}\`\`\``);
@@ -182,12 +182,12 @@ module.exports = {
         } finally {
             if (cmd.cooldown > 0) applyCooldown(interaction.user.id, cmd);
         }
-    },*/
+    },
 
     /**
      * @param {import('@structures/Command')} cmd - command object
      */
-    /*getSlashUsage(cmd) {
+    getSlashUsage(cmd) {
         let desc = "";
         if (cmd.slashCommand.options?.find((o) => o.type === ApplicationCommandOptionType.Subcommand)) {
             const subCmds = cmd.slashCommand.options.filter((opt) => opt.type === ApplicationCommandOptionType.Subcommand);
@@ -203,7 +203,7 @@ module.exports = {
         }
 
         return new EmbedBuilder().setColor(EMBED_COLORS.BOT_EMBED).setDescription(desc);
-    },*/
+    },
 
     //#endregion
 };
