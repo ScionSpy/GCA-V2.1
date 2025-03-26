@@ -8,6 +8,7 @@ const Utils = require('../../Helpers/Utils');
 module.exports = {
     name: "eval",
     description: "evaluates something.",
+    enabled: true,
     category: "DEV",
     prefCommand: {
         enabled: true,

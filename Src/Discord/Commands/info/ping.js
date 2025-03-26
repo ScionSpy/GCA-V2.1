@@ -4,6 +4,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     name: "ping",
     description: "Gets the Clients response time.",
+    enabled: true,
     category: "INFO",
     prefCommand: { enabled: true },
     slashCommand: { enabled: false  },

@@ -55,6 +55,7 @@
 module.exports = {
     name: "",
     description: "",
+    enabled: true,
     cooldown: 0,
     isPremium: false,
     category: "NONE",
@@ -78,14 +79,14 @@ module.exports = {
      * Used to run a Prefix command.
      * @param {import('discord.js').Message} message
      * @param {String[]} args
-     * @param {import('./GuildSettings.js')} settings
+     * @param {import('../../Database/Classes/GuildSettings.js')} settings
      */
     exe: async (message, args, settings) => { },
 
     /**
      * Used to run a Slash command.
      * @param {*} interaction
-     * @param {import('./GuildSettings.js')} settings
+     * @param {import('../../Database/Classes/GuildSettings.js')} settings
      */
     slashExe: (interaction, settings) => { },
 };
