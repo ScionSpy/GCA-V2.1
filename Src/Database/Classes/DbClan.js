@@ -1,6 +1,6 @@
 const Database = require('../core.js');
-const ClanSchema = require('../Schemas/dbClan.js');
-const ClanInfo = require('../../WebAPI/Wargaming/Structures/ClanData.js');
+const { ClanSchema } = require('../Schemas/dbClan.js');
+const { Clan_Info } = require('../../WebAPI/Wargaming/Structures/ClanData.js');
 
 /**
  * @param {ClanSchema | Clan_Info} clan
@@ -43,11 +43,14 @@ const Validator = function(clan){
 
 
     if (clan.members) {
-        if (Array.isArray(clan.members) || typeof clan.members !== "object") {
+        if (!Array.isArray(clan.members) || typeof clan.members !== "object") {
             throw new TypeError(`'clan.members' must be an object or an array! got ${typeof clan.members}`);
         };
 
-        if (Array.isArray(clan.members)) {
+        if (Array.isArray(clan.members) && typeof clan.members[0] === "number") {
+            throw new TypeError(`'clan.members' must be an array of numbers!`);
+
+        } else if (Array.isArray(clan.members)) {
             // clan received is from the API.
 
             for (const x = 0; x < clan.members.length; x++) {
@@ -89,7 +92,7 @@ const Validator = function(clan){
                 };
             };
         };
-    };
+    }; // end clan.members
 
 };
 
@@ -111,13 +114,40 @@ module.exports = class Clan extends Database {
     members = [Number()];
 
     /**
-     * @param {ClanInfo | ClanSchema} clan
+     * @param {Clan_Info | ClanSchema } clan
      */
     constructor(clan){
         Validator(clan);
         this.#logger = new Logger(`Clan<${this.clan_id}>`);
 
-        this.clan_id
+        this.clan_id = clan.clan_id || clan.id;
+        this.name = clan.name;
+        this.tag = clan.tag;
+
+        this.leader = clan.leader || clan.leader_id;
+        this.founder = clan.founder || clan.creator_id;
+
+        if (Array.isArray(clan.members) && typeof clan.members[0] === "number") {
+            this.members = clan.members;
+
+        } else if (Array.isArray(clan.members)) {
+
+            // API Members list.
+            this.members = [];
+            for (let x = 0; x < clan.members.length; x++) {
+                let member = clan.members[x];
+                this.members.push(member.account_id);
+            };
+
+        } else {
+            // DB Members list.
+
+            this.members = [];
+            for (const Member in clan.members) {
+                let member = clan.members[Member];
+                this.members.push(member.id);
+            };
+        };
 
         this.#logger.debug(`clan loaded.`);
     };

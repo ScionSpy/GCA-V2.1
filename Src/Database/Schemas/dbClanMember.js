@@ -6,7 +6,7 @@ const PlayerDBSchema = require('./dbPlayer');
  *
 */
 /**
- * @typedef {PlayerDBSchema & ClanMemberType} ClanMember
+ * @typedef {PlayerDBSchema & ClanMemberType} ClanMemberSchema
  */
 
 /**
@@ -19,5 +19,3 @@ const PlayerDBSchema = require('./dbPlayer');
 /**
  * @typedef {"private" | "officer" | "commissioned_officer" | "recruitment_officer" | "executive_officer" | "commander"} ClanData.RankList
 */
-
-module.exports = ClanMember;

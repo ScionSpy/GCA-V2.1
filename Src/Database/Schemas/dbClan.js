@@ -1,6 +1,6 @@
 
 /**
- * @typedef {Object} Clan
+ * @typedef {Object} ClanSchema
  * @property {Number} id
  * @property {String} name
  * @property {String} tag
@@ -9,5 +9,3 @@
  * @property {Number} founder
  * @property {Array<Number>} members
  */
-
-module.exports = Clan;

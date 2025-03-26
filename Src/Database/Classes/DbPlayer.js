@@ -1,11 +1,11 @@
-const dbPlayer = require('../Schemas/dbPlayer.js');
-const Database = require('../index.js');
+const Database = require('../DB_API.js');
 const Logger = require('../../Structures/Logger/logger.js');
 
+const { PlayerSchema } = require('../Schemas/dbPlayer.js');
 
 /**
  * Validates a Player Object before returning it as a class.
- * @param {dbPlayer} player
+ * @param {PlayerSchema} player
  */
 const Validator = function(player){
     if (typeof player !== "object") {
@@ -28,7 +28,7 @@ const Validator = function(player){
 
 /**
  * Represnts a Player saved on the Database.
- * @type {dbPlayer}
+ * @type {PlayerSchema}
  */
 module.exports = class Player extends Database {
 
@@ -40,7 +40,7 @@ module.exports = class Player extends Database {
 
     /**
      *
-     * @param {dbPlayer} player
+     * @param {PlayerSchema} player
      */
     constructor(player){
         Validator(player);

@@ -1,7 +1,7 @@
-const ClanMemberSchema = require('../Schemas/dbClanMember.js');
 const Player = require('./DbPlayer.js');
-
 const Logger = require('../../Structures/Logger/logger.js');
+
+const { ClanMemberSchema } = require('../Schemas/dbClanMember.js');
 
 /**
  * @typedef {"private" | "officer" | "commissioned_officer" | "recruitment_officer" | "executive_officer" | "commander"} RankList
@@ -27,7 +27,7 @@ const Validator = function(player){
 
 /**
  * Represnts a Player, with a Clan saved on the Database.
- * @type {dbClanMember}
+ * @type {ClanMemberSchema}
  */
 module.exports = class ClanMember extends Player {
 

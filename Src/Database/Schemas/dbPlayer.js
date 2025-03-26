@@ -1,7 +1,7 @@
 
 
 /**
- * @typedef {object} Player
+ * @typedef {object} PlayerSchema
  * @property {Number} id Player's Wargaming ID.
  * @property {String} name Player's Name.
  * @property {String} [discord_id] The Player's Discord ID.
@@ -18,6 +18,3 @@
  * @property {Number} [battles] The Number of battles this Player has played.
  * @property {Number} [distance] The Number of KM this player has traveled.
 */
-
-
-module.exports = Player;
