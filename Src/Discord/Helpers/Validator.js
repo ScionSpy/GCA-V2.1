@@ -100,8 +100,8 @@ module.exports = class Validator {
                     if (typeof sub !== "object") {
                         throw new TypeError("Command.prefCommand subcommands must be an array of objects");
                     };
-                    if (typeof sub.trigger !== "string") {
-                        throw new TypeError("Command.prefCommand subcommand trigger must be a string");
+                    if (typeof sub.name !== "string") {
+                        throw new TypeError("Command.prefCommand subcommand name must be a string");
                     };
                     if (typeof sub.description !== "string") {
                         throw new TypeError("Command.prefCommand subcommand description must be a string");
