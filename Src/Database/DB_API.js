@@ -1,9 +1,13 @@
 /**
- * @typedef {"players"|"players"} TableCategory
+ * @typedef {"guildsettings"|"players"|"rewardcodes"} TableCategory
 */
 
 const AcceptedMethods = [ 'GET', 'POST', 'EDIT', 'DELETE' ];
-const TableCategory = [ "Players", "RewardCodes" ]
+const TableCategory = [
+    "GuildSettings",
+    "Players",
+    "RewardCodes"
+]
 
 
 const Database = require('./core.js');
@@ -81,8 +85,8 @@ class db {
      * @param {object} newData
      */
     _Edit = async function _Edit(table, data, newData) {
-        Validator("EDIT", table, data, newData);
-        return await DB._Edit(table, data, undefined, newData);
+        Validator("EDIT", table, data, undefined, newData);
+        return await DB._Edit(table, data, newData);
     };
 
 
