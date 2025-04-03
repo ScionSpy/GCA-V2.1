@@ -53,6 +53,13 @@ module.exports = class BotClient extends Client {
          */
         this.GuildSettings = new Collection();
 
+
+
+        /**
+         * @type {false | import('../Helpers/Extenders/SupportServer.js')}
+         */
+        this.supportServer = false;//
+
         // Logger
         // this.logger = Logger;
 
@@ -252,7 +259,6 @@ module.exports = class BotClient extends Client {
                 }))
                 .forEach((s) => toRegister.push(s));
         //}
-        console.log(toRegister)
 
         // filter contexts
         /*if (this.config.INTERACTIONS.CONTEXT) {
@@ -326,6 +332,14 @@ module.exports = class BotClient extends Client {
         }
 
         return users;
+    };
+
+
+    getSettings(guild_id){
+        if (!guild_id || isNaN(guild_id)) throw new Error(`Client.getSettings(guild_id); Must be a 'string' representing a Discord Guild ID; got ${typeof guild_id} : ${guild_id}`);
+
+        let settings = this.GuildSettings.get(guild_id);
+        return settings;
     };
 
 

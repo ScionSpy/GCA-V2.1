@@ -1,6 +1,6 @@
 const { commandHandler, automodHandler, statsHandler } = require("../../Handlers");
-const { PREFIX } = require("../../../../config.js");
-//const { getSettings } = require("@schemas/Guild");
+const { PREFIX, USE_PREFIX_COMMANDS } = require("../../../../config.js");
+const GuildSettings = require('../../../Database/Classes/GuildSettings.js');
 
 /**
  * @param {import('../../Structures').BotClient} client
@@ -8,8 +8,12 @@ const { PREFIX } = require("../../../../config.js");
  */
 module.exports = async (client, message) => {
     if (!message.guild || message.author.bot) return;
-    //const settings = await getSettings(message.guild);
-    const settings = { prefix: PREFIX ? PREFIX : "!" }; //Dummy Settings
+    let  settings = await client.getSettings(message.guild);
+    if (!settings){
+        settings = new GuildSettings(message.guild);
+        client.GuildSettings.set(message.guild.id, settings);
+        if (client.supportServer) await client.supportServer.joinedGuild(message.guild);
+    };
 
     // command handler
     let isCommand = false;
@@ -19,10 +23,10 @@ module.exports = async (client, message) => {
         message.channel.sendSafely(`> My prefix is \`${settings.prefix}\``);
     };
 
-    if (message.content && message.content.startsWith(settings.prefix)) {
+    if (USE_PREFIX_COMMANDS && message.content && message.content.startsWith(settings.prefix)) {
         const commandName = message.content.replace(`${settings.prefix}`, "").split(/\s+/)[0];
         const cmd = client.getCommand(commandName);
-        
+
         if(!cmd) console.log(client.commands, client.commandIndex)
         if (cmd) {
             isCommand = true;
