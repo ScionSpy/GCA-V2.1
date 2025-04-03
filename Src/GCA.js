@@ -6,9 +6,10 @@ require("./Discord/Helpers/Extenders/Message");
 require("./Discord/Helpers/Extenders/Guild");
 require("./Discord/Helpers/Extenders/GuildChannel");
 
-
 const BotClient = require('./Discord/Structures/BotClient');
+const { validateConfiguration } = require('./Discord/Helpers/Validator');
 
+validateConfiguration();
 
 // initialize client
 const client = new BotClient();
