@@ -1,5 +1,8 @@
 module.exports = {
-    DbClan: require('./DbClan'),
-    DbClanMember: require('./DbClanMember'),
     DbPlayer: require('./DbPlayer'),
+    DbClanMember: require('./DbClanMember'),
+
+    DbClan: require('./DbClan'),
+
+    GuildSettings: require('./GuildSettings')
 };

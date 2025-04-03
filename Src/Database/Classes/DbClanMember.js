@@ -1,7 +1,7 @@
 const Player = require('./DbPlayer.js');
 const Logger = require('../../Structures/Logger/logger.js');
 
-const { ClanMemberSchema } = require('../Schemas/dbClanMember.js');
+const { ClanMemberSchema } = require('../Schemas/index.js');
 
 /**
  * @typedef {"private" | "officer" | "commissioned_officer" | "recruitment_officer" | "executive_officer" | "commander"} RankList

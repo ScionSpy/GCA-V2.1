@@ -1,7 +1,7 @@
 const Database = require('../DB_API.js');
 const Logger = require('../../Structures/Logger/logger.js');
 
-const { PlayerSchema } = require('../Schemas/dbPlayer.js');
+const { PlayerSchema } = require('../Schemas/index.js');
 
 /**
  * Validates a Player Object before returning it as a class.
@@ -44,8 +44,9 @@ module.exports = class Player extends Database {
      */
     constructor(player){
         Validator(player);
+        super();
 
-        this.#logger = new Logger(`Player<${this.id}>`);
+        this.#logger = new Logger(`Player<${player.id}>`);
 
         this.id = player.id;
         this.name = player.name;

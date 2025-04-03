@@ -1,5 +1,5 @@
 const Database = require('../core.js');
-const { ClanSchema } = require('../Schemas/dbClan.js');
+const { ClanSchema } = require('../Schemas/index.js');
 const { Clan_Info } = require('../../WebAPI/Wargaming/Structures/ClanData.js');
 
 /**
