@@ -1,4 +1,5 @@
 module.exports = {
+    "USE_PREFIX_COMMANDS": false,
     "PREFIX": "!",
     "OWNERS": [],
     "SUPPORT_SERVER": "",
