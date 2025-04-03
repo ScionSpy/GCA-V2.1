@@ -37,10 +37,15 @@ module.exports = {
             const e = new EmbedBuilder();
 
             let output = eval(input);
+
+            output = output;
+
             response = await buildSuccessResponse(output, message.client);
         } catch (ex) {
             response = buildErrorResponse(ex);
         };
+
+
 
         if (typeof response === "string") await message.channel.sendSafely(response, { code: 'js', split: true });
         else await message.channel.send(response);
@@ -54,7 +59,24 @@ const buildSuccessResponse = async (output, client) => {
 
 
     // Token protection
-    output = require("util").inspect(output, { depth: 3 }).replaceAll(client.token, 'DUMMY_TOKEN');
+    output = require("util").inspect(output, { depth: 3 })
+        .replaceAll(client.token, 'REDACTED [ CLIENT_TOKEN ]')
+
+        // Database
+        .replaceAll(process.env.DATABASE_URI, 'REDACTED [ MONGODB_URI ]')
+        .replaceAll(process.env.DATABASE_USERNAME, 'REDACTED [ MONGODB_USERNAME ]')
+        .replaceAll(process.env.DATABASE_PASSWORD, 'REDACTED [ MONGODB_PASSWORD ]')
+
+        // WG API
+        .replaceAll(process.env.API_WARGAMING_APPID, 'REDACTED [ API_WARGAMING_APPID ]')
+        .replaceAll(process.env.API_WARGAMING_AUTHTOKEN, 'REDACTED [ API_WARGAMING_AUTHTOKEN ]')
+
+        // Webhooks
+        if (process.env.LOGGER_WEBHOOK_CONSOLE) output.replaceAll(process.env.LOGGER_WEBHOOK_CONSOLE, 'REDACTED [ LOGGER_WEBHOOK_CONSOLE ]')
+        if (process.env.LOGGER_WEBHOOK_DEBUG) output.replaceAll(process.env.LOGGER_WEBHOOK_DEBUG, 'REDACTED [ LOGGER_WEBHOOK_DEBUG ]')
+        if (process.env.LOGGER_WEBHOOK_WARNING) output.replaceAll(process.env.LOGGER_WEBHOOK_WARNING, 'REDACTED [ LOGGER_WEBHOOK_WARNING ]')
+        if (process.env.LOGGER_WEBHOOK_ERROR) output.replaceAll(process.env.LOGGER_WEBHOOK_ERROR, 'REDACTED [ LOGGER_WEBHOOK_ERROR ]')
+    ;
 
     /*const embed = new MessageEmbed()
         .setAuthor({ name: "📤 Output" })
