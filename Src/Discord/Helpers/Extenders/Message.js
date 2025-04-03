@@ -5,7 +5,7 @@ const { Message } = require("discord.js");
  * @param {number} [seconds]
  */
 Message.prototype.replySafely = async function (content, seconds) {
-    if (!content) return;
+    if (!content || !this.channel) return;
     const perms = ["ViewChannel", "SendMessages"];
     if (content.embeds && content.embeds.length > 0) perms.push("EmbedLinks");
     if (this.channel.type !== "DM" && !this.channel.permissionsFor(this.guild.members.me).has(perms)) return;
