@@ -9,7 +9,10 @@ const {
     ButtonStyle,
     ApplicationCommand,
     ApplicationCommandOptionType,
+    EmbedBuilder
 } = require("discord.js");
+const config = require("../../../../config.js");
+const { Embed } = require("discord.js");
 
 /**
  * Placeholder for Command data.
@@ -47,6 +50,12 @@ module.exports = {
                 description: "Reward",
                 type: ApplicationCommandOptionType.String,
                 required: true,
+            },
+            {
+                name: "author",
+                description: "The author whom announced this code.",
+                type: ApplicationCommandOptionType.String,
+                required: false,
             }
         ],
     },
@@ -67,38 +76,61 @@ module.exports = {
     slashExe: async (interaction, settings) => {
         let rewardCode = interaction.options.getString("reward-code");
         let reward = interaction.options.getString("reward");
+        let author = interaction.options.getString("author");
+        if (author && config.OWNERS.includes(interaction.user.id)){
+            if (isNaN(author)) return interaction.followUp(`\`author\` must be a user ID.`);
+        } else {
+            author = undefined;
+        };
 
         let response;
         let codePost;
+        let user;
 
         rewardCode = rewardCode.toUpperCase();
-        if (await interaction.client.DB.Client.checkForRewardCode(rewardCode)) return interaction.followUp(`This RewardCode was already submitted by another player.`);
+        if (await interaction.client.DB.Client.checkForRewardCode(rewardCode)) {
+            // @TODO: Allow automatic release if {X} users have submitted this code.
+            // // Automatic release will submit the code, Redeem Code: {CODE}\n• "Unverified Rewards"
+            // // // Once verified, the listing will be updated to an official Giveaways post.
+            return interaction.followUp(`This RewardCode was already submitted by another player.`);
+        };
 
-        let code = `https://na.wargaming.net/shop/redeem/?bonus_mode=${rewardCode}`;
-        let user = interaction.user;
-        codePost = `${user ? 'Submitted by: ' + user.displayName ? user.displayName + '\n' : user.id ? 'Submitted by: ' + user.id + '\n' : '' : ''}[${rewardCode}](${code}) = ${reward}`;
+        reward = reward.split('//');
+
+        if (!author) {
+            user = interaction.user;
+        } else {
+            user = interaction.guild.members.cache.get(author);
+        };
+
+        let Data = {
+            code: rewardCode,
+            reward: reward,
+            user: user
+        };
+        let rewardEmbed = await createGiveawayEmbed(Data);
 
         // @TODO: Submit code to all servers.
         // // Check the { interaction.client.GuildSettings } for 'giveaway' options, and submit to provided TextChannel.
 
         // @TEMPORARY
         let messageLink = `https://ptb.discord.com/channels/{GUILD_ID}/{CHANNEL_ID}/{MESSAGE_ID}`;
-        let ch_id = '1137246476188274750';
+        let ch_id = '1354207937807253706';
         try{
             let ch = await interaction.client.channels.cache.get(ch_id);
-            await ch.send(codePost).then( (msg) => {
+            await ch.send({embeds: [rewardEmbed]}).then( (msg) => {
                 messageLink = messageLink
                     .replace('{GUILD_ID}', ch.guild.id)
                     .replace('{CHANNEL_ID}', ch.id)
                     .replace('{MESSAGE_ID}', msg.id)
             });
         } catch (err) {
-            interaction.client.logger.error(`Unable to send 'code' link to channel ${ch_id}`, err);
+            interaction.client.logger.error(`Command.Code.slash(); Unable to send 'code' to channel ${ch_id}`, err);
         };
 
-        response = `Reward posted!\n> ${messageLink}`;
+        response = `Submitted Reward Code for review on the G-C-A server!\n> ${messageLink}`;
 
-        await interaction.followUp(response);
+        await interaction.followUp({embeds:[rewardEmbed]});
 
         let rewardData = {
             rewardCode,
@@ -106,7 +138,30 @@ module.exports = {
             submittedBy: user.id,
             timestamp: Date.now()
         };
-        
+
         await interaction.client.DB.Client.submitRewardCode(rewardData);
     },
+};
+
+
+/**
+ * Creates a Code Giveaway Embed.
+ * @param {Object} data
+ * @param {String} data.code
+ * @param {String} data.reward
+ * @param {import('discord.js').GuildMember} data.user
+ */
+createGiveawayEmbed = async function createGiveawayEmbed(data){
+
+    let codeLink = `Redeem Code: __[${ data.code }](https://na.wargaming.net/shop/redeem/?bonus_mode=${data.code})__`;
+    let embed = new EmbedBuilder();
+    embed.setAuthor({name: data.user.displayName, iconURL: data.user.displayAvatarURL()});
+    embed.addFields(
+        { name: `Reward Code`, value: `${codeLink}\n• :anchor: ${data.reward.join('\n• :anchor: ').trim()}`}
+    );
+    embed.setColor("Random");
+    embed.setTimestamp();
+    embed.setFooter({text: `G-C-A's Automaton`});
+
+    return embed;
 };
