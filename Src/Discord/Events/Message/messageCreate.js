@@ -8,11 +8,13 @@ const GuildSettings = require('../../../Database/Classes/GuildSettings.js');
  */
 module.exports = async (client, message) => {
     if (!message.guild || message.author.bot) return;
-    let  settings = await client.getSettings(message.guild);
+
+    let settings = await client.getSettings(message.guild.id);
+
     if (!settings){
         settings = new GuildSettings(message.guild);
         client.GuildSettings.set(message.guild.id, settings);
-        if (client.supportServer) await client.supportServer.joinedGuild(message.guild);
+        //if (client.supportServer) await client.supportServer.joinedGuild(message.guild);
     };
 
     // command handler

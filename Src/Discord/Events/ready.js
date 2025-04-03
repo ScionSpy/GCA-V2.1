@@ -1,4 +1,5 @@
 const { SUPPORT_SERVER } = require('../../../config');
+const { GuildSettings } = require('../../Database/Classes');
 const SupportServer = require('../Helpers/Extenders/SupportServer');
 
 
@@ -28,8 +29,60 @@ module.exports = async (client) => {
 
     if (client.guilds.cache.size == 0) return client.logger.warn(`Client is not in a Discord Guild! Invite: ${client.getInvite()}`);
 
-    //await loadGuildSettings(client);
+    await loadGuildSettings(client);
 };
+
+
+
+/**
+ * @param {import('../Structures').BotClient} client
+ */
+loadGuildSettings = async function(client){
+    let dbSettings = await client.DB._Get("GuildSettings");
+
+    // For all guilds the bot is currently in, pre-load their settings files.
+    for (const [key, value] of client.guilds.cache) {
+        let dbEntry;
+        for (let x = 0; x < dbSettings.length; x++) {
+            if (dbSettings[x].id !== key) continue;
+            dbEntry = dbSettings[x];
+            break;
+        };
+
+        let settings = new GuildSettings(value, dbEntry);
+        // Resets {available} to true if false.
+        // // Also creates a default settings file if one does not exist.
+        if (!settings.available) {
+            settings.available = true;
+            await settings.save();
+        };
+
+        // Save this setting to our local cache.
+        client.GuildSettings.set(key, settings);
+    };
+
+
+    // For all settings in the database,
+    // // Cross-reference with the guilds the client is actively in.
+    // // If a setting is marked as available, but the client is not in a matching guild, toggle the settings.available value to false;
+
+    let guildIds = client.guilds.cache.map(guild => { return guild.id });
+    for (let x = 0; x < dbSettings.length; x++) {
+        // Client is not on this Guild, however the GuildSetting is still enabled.
+        if (!guildIds.includes(dbSettings[x].id) && dbSettings[x].available) {
+            try{
+                await client.DB._Edit("GuildSettings", {id:dbSettings[x].id}, {"available":false});
+                client.supportServer.leftGuild(dbSettings[x]);
+            } catch (err) {
+                client.logger.error(`client.ready().loadGuildSettings(); Error loading guilds\n`, err.stack);
+            };
+        };
+    };
+};
+
+
+
+
 
 /**
  * @param {import('../Structures').BotClient} client

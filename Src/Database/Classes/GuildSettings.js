@@ -18,6 +18,7 @@ module.exports = class Guild extends Database {
     #guild;
     #available; // Wether the bot is in this server or not.
     id;
+    name;
     prefix = PREFIX;
     channels = {};
 
@@ -30,25 +31,29 @@ module.exports = class Guild extends Database {
      *
      * @param {DiscordGuild} guild
      */
-    constructor(guild){
+    constructor(guild, presetSettings){
         // Temporary until {Validator} function is created.
-        if (!guild || !guild.client) throw new Error(`new Database.Guild(guild, client); both 'guild' and 'client' must be defined!`);
+        if (!guild || !guild.client) throw new Error(`new Database.Guild(guild); both 'guild' and 'guild.client' must be defined!`);
         //Validator(guild, client);
         super();
 
         this.#logger = new Logger(`Guild<${guild.id}>`);
 
         this.id = guild.id;
+        this.name = guild.name;
         this.#guild = guild;
+
         /** @type {import('../../Structures/BotClient.js')} */
         this.#bot = guild.client;
         this.available = guild.available;
 
-        this.loadSettings(guild);
+        this.loadSettings(presetSettings);
     };
 
     async save(){
         let data = {
+            id: this.id,
+            name: this.name,
             prefix: this.prefix,
             available: this.available
         };
@@ -59,7 +64,7 @@ module.exports = class Guild extends Database {
 
         try {
             await this._Edit("GuildSettings", {id:this.id}, data);
-            return true;
+            return this;
         } catch (err) {
             throw new Error(err);
         };
@@ -69,18 +74,24 @@ module.exports = class Guild extends Database {
      *
      * @returns {Guild}
      */
-    async loadSettings(guild) {
+    async loadSettings(presetSettings) {
         delete this.loadSettings;
 
         /** @type {GuildSettingsSchema} */
-        let settings = await this._Get("GuildSettings", {id:this.id});
+        let settings;
+
+        if (!presetSettings) {
+            settings = await this._Get("GuildSettings", {id:this.id});
+            if (settings && settings[0]) settings = settings[0];
+        } else settings = presetSettings;
+
         if (!settings) {
             await this.save();
-            if (this.#bot.supportServer) await this.#bot.supportServer.joinedGuild(guild);
             return this;
         };
 
-        this.prefix = settings.prefix;
+
+        this.prefix = settings.prefix ? settings.prefix : PREFIX;
         this.available = settings.available;
         if (settings.clan_id) this.clan_id = settings.clan_id;
         if (settings.invite) this.#invite = settings.invite;
@@ -97,6 +108,6 @@ module.exports = class Guild extends Database {
     async setPrefix(newPrefix, author){
         this.prefix = newPrefix;
 
-        return this;
+        return this.save();
     };
 };

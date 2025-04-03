@@ -339,6 +339,12 @@ module.exports = class BotClient extends Client {
         if (!guild_id || isNaN(guild_id)) throw new Error(`Client.getSettings(guild_id); Must be a 'string' representing a Discord Guild ID; got ${typeof guild_id} : ${guild_id}`);
 
         let settings = this.GuildSettings.get(guild_id);
+        if (!settings) {
+            let dbResults = this.DB._Get("GuildSettings", {id:guild_id});
+            if (!dbResults || dbResults.length == 0) return false;
+            else settings = dbResults[0];
+        };
+
         return settings;
     };
 
