@@ -9,7 +9,7 @@ module.exports = class Validator {
     static validateConfiguration() {
 
         // Bot Token
-        if (!process.env.BOT_TOKEN) {
+        if (!process.env.DISCORD_TOKEN) {
             Logger.error("env: BOT_TOKEN cannot be empty");
             process.exit(1);
         };
@@ -21,25 +21,36 @@ module.exports = class Validator {
         };
 
 
-        // Pass Warnings.
+        // Pass Warnings and Errors.
         if (config.OWNERS.length === 0) Logger.warn("config.js: OWNERS is empty.");
+
         if (!config.SUPPORT_SERVER) Logger.warn("config.js: SUPPORT_SERVER is not provided.");
-        if (!config.PREFIX) Logger.warn("config.js: PREFIX is blank.");
+        else if (typeof config.SUPPORT_SERVER !== "string" && isNaN(config.SUPPORT_SERVER)) {
+            Logger.error("config: SUPPORT_SERVER if provided must be a String defined as a Discord Guild ID.");
+            process.exit(1);
+        };
+
+        if (config.USE_PREFIX_COMMANDS && !config.PREFIX) Logger.warn("config.js: {USE_PREFIX_COMMANDS} is true however {PREFIX} is blank.");
+
         if (
             config.LOGGER.writeToWebhook &&
             (
-                config.LOGGER.WEBHOOKS.logger_console ||
-                config.LOGGER.WEBHOOKS.logger_debug ||
-                config.LOGGER.WEBHOOKS.logger_warning ||
-                config.LOGGER.WEBHOOKS.logger_error
+                !config.LOGGER.WEBHOOKS.logger_console ||
+                !process.env.LOGGER_WEBHOOK_CONSOLE ||
+                !config.LOGGER.WEBHOOKS.logger_debug ||
+                !process.env.LOGGER_WEBHOOK_DEBUG ||
+                !config.LOGGER.WEBHOOKS.logger_warning ||
+                !process.env.LOGGER_WEBHOOK_WARNING ||
+                !config.LOGGER.WEBHOOKS.logger_error ||
+                !process.env.LOGGER_WEBHOOK_ERROR
             )
         ){
             let disabledWebHooks = [];
 
-            if (config.LOGGER.WEBHOOKS.logger_console) disabledWebHooks.push("LOGGER_WEBHOOK_CONSOLE");
-            if (config.LOGGER.WEBHOOKS.logger_debug) disabledWebHooks.push("LOGGER_WEBHOOK_DEBUG");
-            if (config.LOGGER.WEBHOOKS.logger_warning) disabledWebHooks.push("LOGGER_WEBHOOK_WARNING");
-            if (config.LOGGER.WEBHOOKS.logger_error) disabledWebHooks.push("LOGGER_WEBHOOK_ERROR");
+            if (!config.LOGGER.WEBHOOKS.logger_console || !process.env.LOGGER_WEBHOOK_CONSOLE) disabledWebHooks.push("LOGGER_WEBHOOK_CONSOLE");
+            if (!config.LOGGER.WEBHOOKS.logger_debug || !process.env.LOGGER_WEBHOOK_DEBUG) disabledWebHooks.push("LOGGER_WEBHOOK_DEBUG");
+            if (!config.LOGGER.WEBHOOKS.logger_warning || !process.env.LOGGER_WEBHOOK_WARNING) disabledWebHooks.push("LOGGER_WEBHOOK_WARNING");
+            if (!config.LOGGER.WEBHOOKS.logger_error || !process.env.LOGGER_WEBHOOK_ERROR) disabledWebHooks.push("LOGGER_WEBHOOK_ERROR");
 
             Logger.warn(`config.js: LOGGER.writeToWebhook is enabled, but the following are not provided in the '.env' file: ${disabledWebHooks}`)
         }
