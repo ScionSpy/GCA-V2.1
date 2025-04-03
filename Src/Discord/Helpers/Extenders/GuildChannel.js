@@ -16,13 +16,13 @@ GuildChannel.prototype.canSendEmbeds = function () {
  * @param {String} [options.code]
  * @param {Boolean} [options.split]
  */
-GuildChannel.prototype.sendSafely = async function (content, options) {
-    if (!content) return;
-    if (this.type !== ChannelType.GuildText && this.type !== ChannelType.DM) return;
+GuildChannel.prototype.sendSafely = async function (content, options = {}) {
+    if (!content) throw new Error('NO_MESSAGE_CONTENT');
+    if (this.type !== ChannelType.GuildText && this.type !== ChannelType.DM) throw new Error('INVALID_CHANNEL_TYPE');
 
     const perms = ["ViewChannel", "SendMessages"];
     if (content.embeds && content.embeds.length > 0) perms.push("EmbedLinks");
-    if (!this.permissionsFor(this.guild.members.me).has(perms)) return;
+    if (!this.permissionsFor(this.guild.members.me).has(perms)) throw new Error('MISSING_PERMISSIONS');
 
     try {
         if (options.seconds) {
@@ -43,6 +43,6 @@ GuildChannel.prototype.sendSafely = async function (content, options) {
             };
         };
     } catch (ex) {
-        this.client.logger.error(`safeSend`, ex);
-    }
+        this.client.logger.error(`GuildChannel.sendSafely`, ex.stack);
+    };
 };
