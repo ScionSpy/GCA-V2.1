@@ -39,7 +39,7 @@ GuildChannel.prototype.sendSafely = async function (content, options) {
                     str = `\`\`\`${options.code}\n${str}\`\`\``;
                 };
 
-                return await this.send(str);
+                await this.send(str);
             };
         };
     } catch (ex) {

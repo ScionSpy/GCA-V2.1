@@ -222,16 +222,20 @@ module.exports = class Utils {
 
 
     /**
-     * Splits messages every 1990 characters enuring message can pass through the Discord MessageCreate function.
+     * Splits messages every 1990 characters ensuring message can pass through the Discord MessageCreate function.
      * • Leaves room for a codeblock, and code formatting.
      * @param {String} string string to split.
      * @returns {String[]}
      */
     static messageSplitter(string) {
-        const customSplitMessage = (text) => [
-            text.substring(0, 1990),
-            text.substring(1990, text.length),
-        ];
-        return customSplitMessage(string);
+        function splitString(string) {
+            const result = [];
+            for (let x = 0; x < string.length; x += 1990) {
+                result.push(string.substring(x, x + 1990))
+            };
+            return result;
+        };
+
+        return splitString(string);
     };
 };
