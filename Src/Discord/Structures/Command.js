@@ -8,6 +8,7 @@
  * @typedef {Object} SubCommand
  * @property {String} name - subcommand title.
  * @property {String} description - subcommand description.
+ * @property {String} [usage] - subcommand usage.
  */
 
 /**
@@ -27,7 +28,7 @@
  * @property {String[]} [aliases] - Alternative names for the command. (Must be lowercase)
  * @property {string} [usage=""] - The command usage format string.
  * @property {number} [minArgs=0] - Minimum number of arguments the command takes (default is 0)
- * @property {SubCommand[]} [subcommands=[]] - List of subcommands.
+ * @property {SubCommand[]} [subCommands=[]] - List of subCommands.
  */
 
 /**
