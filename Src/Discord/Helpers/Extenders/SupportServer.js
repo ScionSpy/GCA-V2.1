@@ -22,6 +22,23 @@ module.exports = class SupportServer {
         this.logger = new Logger(`SupportServer<${guild.id}>`);
     };
 
+
+    /**
+     *
+     * @param {String} txt
+     * @param {String} error
+     */
+    async postError(txt, error){
+
+        let msg = `\`${txt}\``;
+        let errMsg = `\`\`\`xl\n${error}\`\`\``;
+
+        try {
+            this.#guild.channels.cache.get('1357948060512157786').sendSafely(msg);
+            if (error) this.#guild.channels.cache.get('1357948060512157786').sendSafely(errMsg);
+        } catch (err) { this.logger.error(`joinedGuild( '${guild.id}' ); Unable to send message to channel! [ '1357948060512157786' ]\n >    ${err.stack}`); };
+    };
+
     async joinedGuild(guild){
         let msg = `SupportServer.joinedGuild(); JOINED GUILD :  (${guild.id}) ${guild.name}`;
         console.log(msg);

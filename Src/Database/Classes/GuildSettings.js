@@ -8,7 +8,7 @@ const BotClient = require('../../Discord/Structures/BotClient.js');
 
 const { PREFIX } = require("../../../config.js");
 
-module.exports = class Guild extends Database {
+module.exports = class GuildSettings extends Database {
 
     #logger;
 
@@ -105,7 +105,8 @@ module.exports = class Guild extends Database {
      * @param {String} newPrefix
      * @param {import('discord.js').User} author
      */
-    async setPrefix(newPrefix, author){
+    async setPrefix(newPrefix, author) {
+        this.#logger.logSettings(` SETTINGS.setPrefix(); Guild_ID: ${this.id}\n>> (${author.id}) "${author.username}" changed the Guild Prefix from ${this.prefix} to ${newPrefix}`);
         this.prefix = newPrefix;
 
         return this.save();

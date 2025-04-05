@@ -47,7 +47,8 @@ let count = 0;
 let logs = [];
 
 const AcceptedLogTypes = [
-    "unsigned", "log", "debug", "warn", "error"
+    "unsigned", "log", "debug", "warn", "error", // defaults
+    "setting_changes" // Any modifications from the "settings" command.
 ];
 
 module.exports = class Logger {
@@ -91,7 +92,7 @@ module.exports = class Logger {
         if (typeof data !== "object") throw new Error(`Logger.writeToFile(data); 'data' must be of type 'Object', got : ${typeof data}`);
         if (!data.content || typeof data.content !== "string") throw new Error(`Logger.writeToFile(data {content, title}); 'data.content' must exist and be of type 'string', got : type: ${typeof data.content} = ${data.content}`);
         if (typeof data.title !== "string") throw new Error(`Logger.writeToFile(data {content, title}); 'data.title' must be of type 'string', got : type: ${typeof data.title} = ${data.title}`);
-        if (!AcceptedLogTypes.includes(data.title)) throw new Error(`Logger.writeToFile(data {content, title}); 'data.title' must be one of the following ${AcceptedLogTypes}, got ${data.title}`);
+        if (!AcceptedLogTypes.includes(data.title)) throw new Error(`Logger.writeToFile(data {content, title});\n• 'data.title' must be one of the following [ ${AcceptedLogTypes.join(', ')} ]; got ${data.title}\n`);
 
 
         let stream = await this.#createStream(data.title);
@@ -111,10 +112,10 @@ module.exports = class Logger {
      * @param {Object} code
      * @param {Boolean} endNewLine
      */
-    hiddenLog(content = "", code) {
+    hiddenLog(content = "", code, logFileName = "log") {
         let txt = `${content}`;
         if (code) txt += `\n${JSON.stringify(code, null, 4)}`;
-        this.writeToFile({ title: "log", content: txt });
+        this.writeToFile({ title: logFileName, content: txt });
     };
 
 
@@ -134,17 +135,39 @@ module.exports = class Logger {
         this.hiddenLog(content, code);
     };
 
+
+    /**
+     * @param {String} content
+     * @param {Object} code
+     * @param {Boolean} endNewLine
+     */
+    logSettings(content = "", code, endNewLine = false) {
+        if (config.LOGGER.announceDebugs) {
+            if (!code) console.log(`\u001b[32mINFO\u001b[0m ${timestamp()} [${this.name}] ${content}`);
+            else {
+                console.log(`\u001b[32mINFO\u001b[0m ${timestamp()} [${this.name}] ${content}\n`);
+                console.log(code);
+                if (endNewLine) console.log();
+            };
+        };
+
+        this.hiddenLog(content, code, "setting_changes");
+    };
+
     /**
      * @param {String} content
      * @param {Object} code
      * @param {Boolean} endNewLine
      */
     debug(content = "", code, endNewLine = false) {
-        if (!code) console.log(`\u001b[90mDEBUG\u001b[0m ${timestamp()} [${this.name}] ${content}`);
-        else {
-            console.log(`\u001b[90mDEBUG\u001b[0m ${timestamp()} [${this.name}] ${content}\n`);
-            console.log(code);
-            if (endNewLine) console.log();
+        if (!config.LOGGER.debug) return;
+        if (config.LOGGER.announceDebugs) {
+            if (!code) console.log(`\u001b[90mDEBUG\u001b[0m ${timestamp()} [${this.name}] ${content}`);
+            else {
+                console.log(`\u001b[90mDEBUG\u001b[0m ${timestamp()} [${this.name}] ${content}\n`);
+                console.log(code);
+                if (endNewLine) console.log();
+            };
         };
 
         let txt = `${content}`;
