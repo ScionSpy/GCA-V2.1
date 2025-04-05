@@ -1,7 +1,8 @@
 const { EmbedBuilder, ApplicationCommandOptionType, codeBlock } = require("discord.js");
-const { OWNERS, PREFIX } = require("../../../config");
+const { OWNERS, WHITELISTED, PREFIX } = require("../../../config");
 const { parsePermissions } = require("../Helpers/Utils");
 const { timeformat } = require("../Helpers/Utils");
+const GuildSettings = require("../../Database/Classes/GuildSettings");
 //const { getSettings } = require("@schemas/Guild");
 
 const cooldownCache = new Map();
@@ -13,7 +14,7 @@ module.exports = {
     /**
      * @param {import('discord.js').Message} message
      * @param {import("../Structures/Command")} cmd
-     * @param {object} settings
+     * @param {GuildSettings} settings
      */
     handlePrefixCommand: async function (message, cmd, settings) {
         if (!message.channel.permissionsFor(message.guild.members.me).has("SendMessages")) return;
@@ -21,11 +22,6 @@ module.exports = {
         const prefix = settings.prefix;
         const args = message.content.replace(prefix, "").split(/\s+/);
         const commandName = args.shift().toLowerCase();
-
-        const data = {};
-        data.settings = settings;
-        data.prefix = prefix;
-        data.commandName = commandName;
 
 
         // callback validations
@@ -40,6 +36,11 @@ module.exports = {
         // Owner commands
         if (cmd.category === "OWNER" && !OWNERS.includes(message.author.id)) {
             return message.replySafely("This command is only accessible to the bot owners.");
+        };
+
+        // VIP commands.
+        if (cmd.isPremium && !OWNERS.includes(message.author.id) && !WHITELISTED.includes(message.author.id)) {
+            return message.replySafely(`This command is restricted to Donators.`);
         };
 
         // check user permissions
@@ -71,12 +72,14 @@ module.exports = {
         };
 
         try {
-            await cmd.exe(message, args, data);
+            await cmd.exe(message, args, settings);
         } catch (ex) {
-            message.client.logger.error("exe", ex);
+            message.client.logger.error(`Command Error: '${cmd.name}'`, ex.stack);
             message.replySafely("An error occurred while attempting to run this command.").then( /** @param {import('discord.js').Message} msg */(msg) => {
                 msg.reply(`\`\`\`xl\n${ex.stack}\`\`\``);
             });
+
+            message.client.supportServer.postError(`Command Error: '${cmd.name}'`, ex.stack);
         } finally {
             if (cmd.cooldown > 0) applyCooldown(message.author.id, cmd);
         };
@@ -117,6 +120,7 @@ module.exports = {
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
      */
     handleSlashCommand: async function (interaction) {
+        /** @type {import('../Structures/Command')} */
         const cmd = interaction.client.slashCommands.get(interaction.commandName);
         if (!cmd) return interaction.reply({ content: "An error has occurred", ephemeral: true }).catch(() => { });
 
@@ -130,7 +134,7 @@ module.exports = {
                     });
                 }
             }
-        }
+        };
 
         // Owner commands
         if (cmd.category === "OWNER" && !OWNERS.includes(interaction.user.id)) {
@@ -138,7 +142,15 @@ module.exports = {
                 content: `This command is only accessible to bot owners`,
                 ephemeral: true,
             });
-        }
+        };
+
+        // VIP commands.
+        if (cmd.isPremium && !OWNERS.includes(interaction.user.id) && !WHITELISTED.includes(interaction.user.id)) {
+            return interaction.reply({
+                content: `This command is restricted to Donators.`,
+                ephemeral: true,
+            });
+        };
 
         // user permissions
         if (interaction.member && cmd.userPermissions?.length > 0) {
@@ -173,11 +185,12 @@ module.exports = {
 
         try {
             await interaction.deferReply({ ephemeral: cmd.slashCommand.ephemeral });
-            const settings = { prefix: PREFIX ? PREFIX : '!'}; //await getSettings(interaction.guild);
-            await cmd.slashExe(interaction, { settings });
+            const settings = await interaction.client.getSettings(interaction.guild.id);
+            await cmd.slashExe(interaction, settings );
         } catch (ex) {
-            await interaction.followUp(`Oops! An error occurred while running the command!\n\`\`\`xl\n${ex.stack}\`\`\``);
-            interaction.client.logger.error("slashExe", ex.stack);
+            await interaction.followUp(`An error occurred while attempting to run this command!\n\`\`\`xl\n${ex.stack}\`\`\``);
+            interaction.client.logger.error(`Command Error: '${cmd.name}'`, ex.stack);
+            interaction.client.supportServer.postError(`Command Error: '${cmd.name}'`, ex.stack);
 
         } finally {
             if (cmd.cooldown > 0) applyCooldown(interaction.user.id, cmd);

@@ -4,6 +4,8 @@ module.exports = {
     "OWNERS": [],
     "SUPPORT_SERVER": "",
 
+    "WHITELISTED": [],
+
     "LOGGER": {
         "writeToFile": true,
         "writeToWebhook": true,
