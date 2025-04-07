@@ -10,5 +10,7 @@
  * @property {String} prefix This Guild's client prefix.
  * @property {String} invite This Guilds invite created by the client.
  *
+ * @property {"giveaways"|"member-updates"} channels This guilds channel preferences.
+ *
  * @property {Number} clan_id This Guilds bound Wargaming Clan ID
 */

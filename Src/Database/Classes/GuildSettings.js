@@ -8,6 +8,11 @@ const BotClient = require('../../Discord/Structures/BotClient.js');
 
 const { PREFIX } = require("../../../config.js");
 
+
+/**
+ * @typedef {"giveaways"|"member_updates"} ChannelTypes
+ */
+
 module.exports = class GuildSettings extends Database {
 
     #logger;
@@ -20,6 +25,7 @@ module.exports = class GuildSettings extends Database {
     id;
     name;
     prefix = PREFIX;
+    /** @type {ChannelTypes} */
     channels = {};
 
     clan_id;
@@ -61,6 +67,10 @@ module.exports = class GuildSettings extends Database {
         if (this.clan_id) data.clan_id = this.clan_id;
         if (this.#invite) data.invite = this.#invite;
 
+        for (const key in this.channels) {
+            if (!data.channels) data.channels = {};
+            data.channels[key] = this.channels[key];
+        };
 
         try {
             await this._Edit("GuildSettings", {id:this.id}, data);
@@ -95,19 +105,33 @@ module.exports = class GuildSettings extends Database {
         this.available = settings.available;
         if (settings.clan_id) this.clan_id = settings.clan_id;
         if (settings.invite) this.#invite = settings.invite;
+        if (settings.channels) this.channels = settings.channels;
 
         return this;
     };
 
 
     /**
-     *
+     * Sets the Guild prefix to newPrefix.
      * @param {String} newPrefix
      * @param {import('discord.js').User} author
      */
     async setPrefix(newPrefix, author) {
         this.#logger.logSettings(` SETTINGS.setPrefix(); Guild_ID: ${this.id}\n>> (${author.id}) "${author.username}" changed the Guild Prefix from ${this.prefix} to ${newPrefix}`);
         this.prefix = newPrefix;
+
+        return this.save();
+    };
+
+
+    /**
+     * Sets the channel type to post in a specified channel.
+     * @param {ChannelTypes} channelType
+     * @param {import('discord.js').GuildChannel} channel
+     */
+    async setChannel(channelType, channel, author) {
+        this.#logger.logSettings(` SETTINGS.setChannel(); Guild_ID: ${this.id}\n>> (${author.id}) "${author.username}" changed the Guild ChannelType '${channelType}'${this.channels[channelType] ? `from ${this.channels[channelType]}` : "null"} to ${channel.id}`);
+        this.channels[channelType] = channel.id;
 
         return this.save();
     };
