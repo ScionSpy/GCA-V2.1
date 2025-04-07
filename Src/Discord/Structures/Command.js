@@ -86,8 +86,8 @@ module.exports = {
 
     /**
      * Used to run a Slash command.
-     * @param {*} interaction
-     * @param {import('../../Database/Classes/GuildSettings.js')} settings
+     * @param {CommandInteraction} interaction
+     * @param {import('../../../Database/Classes/GuildSettings.js')} settings
      */
     slashExe: (interaction, settings) => { },
 };
