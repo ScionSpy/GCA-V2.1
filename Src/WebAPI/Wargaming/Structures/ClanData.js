@@ -7,6 +7,15 @@
 */
 
 /**
+ * @typedef {Object} Clan_Lookup
+ * @property {Number} clan_id This Clan's ID.
+ * @property {Number} created_at Timestamp this clan was created in Epoch.
+ * @property {String} tag This Clan's tag.
+ * @property {String} name This Clan's name.
+ * @property {Number} members_count This Clan's current member count.
+ */
+
+/**
  * @typedef {Object} Clan_Info
  * @property {Number} clan_id
  * @property {String} tag
