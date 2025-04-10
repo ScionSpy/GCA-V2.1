@@ -99,6 +99,8 @@ module.exports = class Wargaming_API extends WebAPI {
         let results;
 
         try {
+            if (auth) auth = `wsauth_token=${auth}`;
+
             results = await this.__makeRequest(request, auth);
         } catch (err) {
             results = err;
@@ -120,6 +122,8 @@ module.exports = class Wargaming_API extends WebAPI {
         let results;
 
         try {
+            if (auth) auth = `wsauth_token=${auth}`;
+
             data = JSON.stringify(data);
             results = await this.__makePost(path, auth, data);
         } catch (err) {
@@ -143,6 +147,8 @@ module.exports = class Wargaming_API extends WebAPI {
         let results;
 
         try {
+            if (auth) auth = `wsauth_token=${auth}`;
+            
             data = JSON.stringify(data);
             results = await this.__makePatch(path, auth, data);
         } catch (err) {
