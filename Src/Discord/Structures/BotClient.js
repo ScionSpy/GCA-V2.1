@@ -48,10 +48,21 @@ module.exports = class BotClient extends Client {
          */
         this.slashCommands = new Collection(); // store slash commands
 
+
         /**
          * @type {Array<import('../../Database/Schema/GuildSettings.js').GuildSettings>}
          */
         this.GuildSettings = new Collection();
+
+        /**
+         * @type {Array<import('../../Database/Classes/DbClan.js')>}
+         */
+        this.Clans = new Collection();
+
+        /**
+         * @type {Array<import('../../Database/Classes/DbPlayer.js')>}
+         */
+        this.Players = new Collection();
 
 
 
@@ -120,7 +131,7 @@ module.exports = class BotClient extends Client {
                 success += 1;
             } catch (ex) {
                 failed += 1;
-                this.logger.error(`loadEvent - ${file}`, ex);
+                this.logger.error(`loadEvent - ${file}`, ex.stack);
             };
         });
 
@@ -153,7 +164,7 @@ module.exports = class BotClient extends Client {
                 success += 1;
             } catch (ex) {
                 failed += 1;
-                this.logger.error(`loadGcaEvent - ${file}`, ex);
+                this.logger.error(`loadGcaEvent - ${file}`, ex.stack);
             };
         });
 
