@@ -5,6 +5,7 @@
 const AcceptedMethods = [ 'GET', 'POST', 'EDIT', 'DELETE' ];
 const TableCategory = [
     "GuildSettings",
+    "Clans",
     "Players",
     "RewardCodes"
 ]
