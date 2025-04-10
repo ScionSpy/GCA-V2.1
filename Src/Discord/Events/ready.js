@@ -1,5 +1,5 @@
 const { SUPPORT_SERVER } = require('../../../config');
-const { GuildSettings } = require('../../Database/Classes');
+const { GuildSettings, DbClan, DbPlayer } = require('../../Database/Classes');
 const SupportServer = require('../Helpers/Extenders/SupportServer');
 
 
@@ -30,6 +30,9 @@ module.exports = async (client) => {
     if (client.guilds.cache.size == 0) return client.logger.warn(`Client is not in a Discord Guild! Invite: ${client.getInvite()}`);
 
     await loadGuildSettings(client);
+    await loadClans(client);
+    await loadPlayers(client);
+    await updatedClanPlayerStats(client);
 };
 
 
@@ -37,7 +40,7 @@ module.exports = async (client) => {
 /**
  * @param {import('../Structures').BotClient} client
  */
-loadGuildSettings = async function(client){
+async function loadGuildSettings(client){
     let dbSettings = await client.DB._Get("GuildSettings");
 
     // For all guilds the bot is currently in, pre-load their settings files.
@@ -68,6 +71,7 @@ loadGuildSettings = async function(client){
 
     let guildIds = client.guilds.cache.map(guild => { return guild.id });
     for (let x = 0; x < dbSettings.length; x++) {
+
         // Client is not on this Guild, however the GuildSetting is still enabled.
         if (!guildIds.includes(dbSettings[x].id) && dbSettings[x].available) {
             try{
@@ -82,32 +86,57 @@ loadGuildSettings = async function(client){
 
 
 
+/**
+ * @param {import('../Structures').BotClient} client
+ */
+async function loadClans(client) {
+    let dbSettings = await client.DB._Get("Clans");
+
+
+    // For all of the Clans bot is currently aware of, cache their settings files.
+    for (let x = 0; x < dbSettings.length; x++) {
+        let dbEntry = dbSettings[x];
+
+        let settings = new DbClan(dbEntry);
+
+        // Save this setting to our local cache.
+        client.Clans.set(settings.id, settings);
+    };
+};
+
 
 
 /**
  * @param {import('../Structures').BotClient} client
  */
-/*loadGuildSettings = async function(client){
-    let dbSettings = await client.DB._Get("GuildSettings");
-    let results = {
-        newGuilds: [ ], // {id: String, name: String}
-        oldGuilds: [ ], // {id: String, name: String}
+async function loadPlayers(client) {
+    let dbSettings = await client.DB._Get("Players");
+
+
+    // For all of the Players bot is currently aware of, cache their settings files.
+    for (let x = 0; x < dbSettings.length; x++) {
+        let dbEntry = dbSettings[x];
+
+        let settings = new DbPlayer(dbEntry);
+
+
+        // Save this setting to our local cache.
+        client.Players.set(settings.id, settings);
     };
+};
 
-    for (const [key, value] of bot.guilds.cache) {
-        let found;
-        for (let x = 0; x < dbSettings.length; x++) {
 
-            if (dbSettings[x].id !== key) continue;
-            found = dbSettings[x];
-            break;
-        };
-        if (found) continue
+/**
+ * @param {import('../Structures').BotClient} client
+ */
+async function updatedClanPlayerStats(client){
+    client.emit("fetchAPIData", client);
 
-        //bot._postNewGuild(bot.guilds.cache.get(key));
+    let results = new Promise(async function (res, rej) {
+        client.once("APIDataFetched", () => {
+            res(true);
+        });
+    });
 
-        //let guild = await new Guild(await bot.guilds.cache.get(key), bot);
-        //guild = await guild.toggleClan(true);
-        //guild.save();
-    };
-};*/
+    return results;
+};
