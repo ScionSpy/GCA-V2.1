@@ -4,6 +4,7 @@
  * @property {Number} account_id
 */
 
+
 /**
  * @typedef {Object} PlayerDetails
  * @property {Number} account_id Player's account ID.
@@ -29,7 +30,19 @@
 */
 /**
  * @typedef {Object} PlayerDetails.statistics.pvp
- */
+*/
+/**
+ * @typedef {Object} PlayerClan
+ * @property {Object} [clan] - The clan this Player is in.
+ * @property {Number} clan.clan_id - This Player's clan ID
+ * @property {Number} clan.joined_at - Date at which this Player joined this clan.
+ * @property {String} clan.rank - This Player's rank within the clan.
+*/
+
+/**
+ * @typedef {PlayerDetails & PlayerClan} PlayerAPIData
+*/
+
 
 
 /**
