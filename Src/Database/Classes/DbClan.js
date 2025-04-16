@@ -1,4 +1,5 @@
 const Database = require('../core.js');
+const Logger = require('../../Structures/Logger/logger.js');
 const { ClanSchema } = require('../Schemas/index.js');
 const { Clan_Info } = require('../../WebAPI/Wargaming/Structures/ClanData.js');
 
@@ -103,6 +104,7 @@ const Validator = function(clan){
  */
 module.exports = class Clan extends Database {
 
+    /** @type {Logger|Null} */
     #logger = null;
 
     id = 0;
@@ -119,7 +121,6 @@ module.exports = class Clan extends Database {
     constructor(clan){
         Validator(clan);
         this.#logger = new Logger(`Clan<${this.clan_id}>`);
-
         this.clan_id = clan.clan_id || clan.id;
         this.name = clan.name;
         this.tag = clan.tag;
@@ -150,5 +151,63 @@ module.exports = class Clan extends Database {
         };
 
         this.#logger.debug(`clan loaded.`);
+    };
+
+
+    /**
+     * Update the Clan's Leader.
+     * @param {number} newLeader Representing the Clan Leader's Player ID.
+     * @returns {Clan}
+     */
+    async setLeader(newLeader) {
+        if (!newLeader || typeof newLeader !== "number" || newLeader.toString().length < 10) throw new Error(`Clan.setLeader(newLeader); 'newLeader' must be a 10-digit number representing a WG Player ID! got ${typeof newLeader} : ${newLeader}`);
+        this.#logger.logSettings(` setLeader(); Player<${this.leader}> updated clan leader from [ ${this.leader} ] to [ ${newLeader} ]`);
+
+        this.leader = newLeader;
+        return await this.save();
+    };
+
+
+    /**
+     * Update the Clan's Name.
+     * @param {String} newName This Clan's new Name.
+     * @returns {Clan}
+     */
+    async setName(newName) {
+        if (!newName || typeof newName !== "string") throw new Error(`Clan.setName(newName); 'newName' must be a string! got ${typeof newName} : ${newName}`);
+        this.#logger.logSettings(` setName(); Player<${this.leader}> update clan name from [ ${this.name} ] to [ ${newName} ]`);
+
+        this.name = newName;
+        return await this.save();
+    };
+
+
+    /**
+     * Update the Clan's Tag.
+     * @param {String} newTag This Clan's new Tag.
+     * @returns {Clan}
+     */
+    async setTag(newTag) {
+        if (!newTag || typeof newTag !== "string") throw new Error(`Clan.setTag(newTag); 'newTag' must be a string! got ${typeof newTag} : ${newTag}`);
+        this.#logger.logSettings(` setName(); Player<${this.leader}> update clan name from [ ${this.name} ] to [ ${newTag} ]`);
+
+        this.name = newTag;
+        return await this.save();
+    };
+
+
+    /**
+     * Update the Clan's Member List.
+     * @param {Array<Number>} memberList Update this Clan's Members List.
+     * @returns {Clan}
+     */
+    async setMembers(memberList) {
+        if (!memberList || !Array.isArray(memberList) || memberList.length == 0) throw new Error(`Clan.setMembers(memberList); 'memberList' must be an Array, of length 1 or more. got ${typeof memberList} : ${memberList}`);
+        for (let x = 0; x < memberList.length; x++) {
+            if (typeof memberList[x] !== "number" || memberList[x].toString().length < 10) throw new Error(`Clan.setMembers(memberList); 'memberList' must be an Array of 10-digit numbers representing WG Player IDs! rcvd in memberList postion ${x} ${typeof memberList[x]} : ${memberList[x]}`);
+        };
+
+        this.members = memberList;
+        return await this.save();
     };
 };
