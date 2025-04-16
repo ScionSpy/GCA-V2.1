@@ -15,6 +15,7 @@ const { PREFIX } = require("../../../config.js");
 
 module.exports = class GuildSettings extends Database {
 
+    /** @type {Logger|Null} */
     #logger;
 
     /** @type {BotClient} */
