@@ -7,13 +7,12 @@ const SupportServer = require('../Helpers/Extenders/SupportServer');
  * @param {import('../Structures').BotClient} client
  */
 module.exports = async (client) => {
-    client.logger.webConsole(`Logged in as ${client.user.tag}! \`(${client.user.id})\`\n\nClient took ${Date.now() - client.startUpAt}ms to start!`);
-    delete client.startUpAt;
+    client.logger.webConsole(`Logged in as ${client.user.tag}! \`(${client.user.id})\``);
 
     let supportGuild = client.guilds.cache.get(SUPPORT_SERVER);
     if (supportGuild) client.supportServer = new SupportServer(client, supportGuild);
     else {
-        client.logger.warn(`{Config.SUPPORT_SERVER} is defined, however the Client is not in a guild with a guild.id queal to "${SUPPORT_SERVER}"!`);
+        client.logger.warn(`{Config.SUPPORT_SERVER} is defined, however the Client is not in a guild with a guild.id equal to "${SUPPORT_SERVER}"!`);
         client.supportServer = false;
     };
 
@@ -32,7 +31,11 @@ module.exports = async (client) => {
     await loadGuildSettings(client);
     await loadClans(client);
     await loadPlayers(client);
-    await updatedClanPlayerStats(client);
+    await updatedClanPlayerStatsAndAnnounceWatcher(client);
+
+
+    client.logger.webConsole(`\n\nClient took ${Date.now() - client.startUpAt}ms to start!`);
+    delete client.startUpAt;
 };
 
 
@@ -129,7 +132,7 @@ async function loadPlayers(client) {
 /**
  * @param {import('../Structures').BotClient} client
  */
-async function updatedClanPlayerStats(client){
+async function updatedClanPlayerStatsAndAnnounceWatcher(client) {
     client.emit("fetchAPIData", client);
 
     let results = new Promise(async function (res, rej) {
