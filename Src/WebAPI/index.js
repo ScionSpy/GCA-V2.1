@@ -82,7 +82,7 @@ module.exports = class WebApp {
 
         let promise = new Promise(function (res, rej) {
             if (config.DEBUG) logger.debug(`WebAPI: Request: ${URL}`);
-
+            
             const request = createRequest(options, res, rej);
 
             request.end()

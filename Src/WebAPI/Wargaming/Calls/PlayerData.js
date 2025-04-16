@@ -56,7 +56,7 @@ PlayerData.lookup = async function lookup(query, exact = false) {
  * @returns {Array<Array<PlayerDetails>>}
  */
 PlayerData.getDetails = async function getDetails(query, authToken) {
-    if (!query || !query[0]) return;
+    if (typeof query === "undefined" || query.length == 0) return;
     if (typeof query === "number" && query.toString().length >= 10) query = `${query}`;
     else if (Array.isArray(query)) query = query.join(",");
     if (typeof query !== "string") throw new Error(`WargamingAPI.Player.getDetails();\n  'query' must be an array of strings, or a string! got ${typeof query}\n`);
@@ -92,7 +92,7 @@ PlayerData.getDetails = async function getDetails(query, authToken) {
  * @returns {Array<Array<PlayerClanInfo>>}
  */
 PlayerData.getClanInfo = async function getClanInfo(query, clanExtra = '', authToken) {
-    if (!query || !query[0]) return;
+    if (typeof query === "undefined" || query.length == 0) return;
     if (typeof query === "number" && query.toString().length >= 10) query = `${query}`;
     else if (Array.isArray(query) && query[0]) query = query.join(",");
     if (typeof query !== "string") throw new Error(`WargamingAPI.Player.getClanInfo();\n  'query' must be an array of strings, or a string! got ${typeof query}\n`);
