@@ -13,4 +13,12 @@ module.exports = {
         name: "info",
         icon: "ℹ"
     },
+    MEMBER: {
+        name: "member",
+        icon: ''
+    },
+    PLAYER: {
+        name: "player",
+        icon: ''
+    },
 };

@@ -12,7 +12,7 @@
  */
 
 /**
- * @typedef {"OWNER"|"ADMIN"|"INFO"} CommandCategory
+ * @typedef {"OWNER"|"ADMIN"|"MEMBER"|"PLAYER"|"INFO"} CommandCategory
  */
 
 /**
@@ -45,9 +45,12 @@
  * @property {InteractionInfo} slashCommand - The slash based version of this command.
  * @property {function(import('discord.js').Message, String[], Object)} exe - The callback to be executed when the command is executed.
  * @property {function(import('discord.js').ChatInputCommandInteraction, Object)} slashExe - The callback to be executed when the interaction is executed.
- */
+*/
 
 
+
+// const { CommandData } = require('../../Structures/Command.js');
+// const { ApplicationCommandOptionType } = require('discord.js');
 
 /**
  * Placeholder for Command data.
@@ -86,7 +89,7 @@ module.exports = {
 
     /**
      * Used to run a Slash command.
-     * @param {CommandInteraction} interaction
+     * @param {import('discord.js').CommandInteraction} interaction
      * @param {import('../../../Database/Classes/GuildSettings.js')} settings
      */
     slashExe: (interaction, settings) => { },
