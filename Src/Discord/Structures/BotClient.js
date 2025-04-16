@@ -16,7 +16,7 @@ const { getTimeStamp } = require('../Helpers/Utils.js');
 
 
 module.exports = class BotClient extends Client {
-    /** @type {import('./Logger/webLogger.js')} */
+    /** @type {Logger} */
     logger = new Logger('Discord Client');
 
     constructor() {
@@ -50,17 +50,17 @@ module.exports = class BotClient extends Client {
 
 
         /**
-         * @type {Array<import('../../Database/Schema/GuildSettings.js').GuildSettings>}
+         * @type {Collection<String, import('../../Database/Schema/GuildSettings.js').GuildSettings>}
          */
         this.GuildSettings = new Collection();
 
         /**
-         * @type {Array<import('../../Database/Classes/DbClan.js')>}
+         * @type {Collection<Number,import('../../Database/Classes/DbClan.js')>}
          */
         this.Clans = new Collection();
 
         /**
-         * @type {Array<import('../../Database/Classes/DbPlayer.js')>}
+         * @type {Collection<Number, import('../../Database/Classes/DbPlayer.js') | import('../../Database/Classes/DbClanMember.js')>}
          */
         this.Players = new Collection();
 
@@ -281,27 +281,32 @@ module.exports = class BotClient extends Client {
                 .forEach((c) => toRegister.push(c));
         }*/
 
-        // Register Globally
-        if (!guildId) {
-            await this.application.commands.set(toRegister);
-        }
-
-        // Register for a specific guild
-        else if (guildId && typeof guildId === "string") {
-            const guild = this.guilds.cache.get(guildId);
-            if (!guild) {
-                this.logger.error(`Failed to register interactions in guild ${guildId}`, new Error("No matching guild"));
-                return;
+        try{
+            // Register Globally
+            if (!guildId) {
+                await this.application.commands.set(toRegister);
             }
-            await guild.commands.set(toRegister);
-        }
 
-        // Throw an error
-        else {
-            throw new Error("Did you provide a valid guildId to register interactions");
-        }
+            // Register for a specific guild
+            else if (guildId && typeof guildId === "string") {
+                const guild = this.guilds.cache.get(guildId);
+                if (!guild) {
+                    this.logger.error(`Failed to register interactions in guild ${guildId}`, new Error("No matching guild"));
+                    return;
+                }
+                await guild.commands.set(toRegister);
+            }
 
-        this.logger.debug(`Successfully registered ${toRegister.length} interactions!`);
+            // Throw an error
+            else {
+                throw new Error("Did you provide a valid guildId to register interactions");
+            }
+
+            this.logger.debug(`Successfully registered ${toRegister.length} interactions!`);
+        } catch(err) {
+            this.logger.error(`Error registering slash commands`, err.stack);
+            console.log(toRegister)
+        };
     }
 
     //#endregion
